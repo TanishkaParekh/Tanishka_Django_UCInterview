@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Cocktail Search</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Candara,sans-serif;
+            background: linear-gradient(135deg, #4d3aa1 0%, #5a3580 50%, #8b3d40 100%);
+            color: rgb(206, 206, 206);
+            overflow-x: hidden;
+            
+        }
+        .tropical-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: -50px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index : -1;
+            pointer-events: none        
+        }
+
+        .tropical-bubble {
+            position: absolute;
+            bottom: -200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            animation: tropicalBubbleRise 6s infinite linear;
+        }
+
+        .tropical-bubble:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-delay: 0s; }
+        .tropical-bubble:nth-child(2) { left: 25%; width: 75px; height: 75px; animation-delay: 2s; }
+        .tropical-bubble:nth-child(3) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; }
+        .tropical-bubble:nth-child(4) { left: 55%; width: 68px; height: 68px; animation-delay: 4s; }
+        .tropical-bubble:nth-child(5) { left: 70%; width: 82px; height: 82px; animation-delay: 2s; }
+        .tropical-bubble:nth-child(6) { left: 85%; width: 76px; height: 76px; animation-delay: 0s; }
+
+        @keyframes tropicalBubbleRise {
+            0%   { bottom: -100px; opacity: 0; transform: scale(0); }
+            10%  { opacity: 0.6; transform: scale(1); }
+            90%  { opacity: 0.6; }
+            100% { bottom: 100vh; opacity: 0; transform: scale(0); }
+        }
+
+        .floating-ingredients {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ingredient {
+            position: absolute;
+            font-size: 2em;
+            animation: ingredientFloat 8s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        .ingredient:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .ingredient:nth-child(2) { left: 20%; animation-delay: 1s; }
+        .ingredient:nth-child(3) { left: 30%; animation-delay: 2s; }
+        .ingredient:nth-child(4) { left: 40%; animation-delay: 3s; }
+        .ingredient:nth-child(5) { left: 50%; animation-delay: 4s; }
+        .ingredient:nth-child(6) { left: 60%; animation-delay: 5s; }
+        .ingredient:nth-child(7) { left: 70%; animation-delay: 6s; }
+        .ingredient:nth-child(8) { left: 80%; animation-delay: 7s; }
+
+        @keyframes ingredientFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .palm-trees {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+            animation: palmSway 6s ease-in-out infinite;
+        }
+
+        @keyframes palmSway {
+            0%, 100% { transform: skewX(0deg); }
+            50% { transform: skewX(2deg); }
+        }
+
+        .search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    width: 100%;
+    padding: 0 20px; 
+    gap: 10px;
+}
+
+.search-input {
+    flex:1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #b2c6f1;
+    color: #333;
+    font-size: 16px;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.search-input:focus {
+    outline: none;
+    background-color: #b2c6f1;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.search-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #ff8c94;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+
+.search-button:hover {
+    background-color: #e76f7f;
+}
+
+        </style>
+</head>
+<body>
+
+    <div class="tropical-bubbles">
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+    </div>
+    <br><br>
+    <h1 style="text-align: center;font-size: 4em;">MIX MASTER</h1><br>
+    <h3 style="text-align: center;">Discover hundreds of cocktail recipes, master bartending techniques, and create unforgettable drinks with our professional-grade cocktail database.</h3>
+
+<form action="" method="get" class="search-form">
+    {% csrf_token %}
+    <input type="text" name="search" placeholder="Search cocktails..." class="search-input">
+    <button type="submit" class="search-button">Search</button>
+</form>
+<br><br><br>
+<hr>
+<br><br>
+{% if drink_data or ingredient_data %}
+    <h1 style="text-align: center; font-size: 3em">Cocktail Menue</h1>
+
+    {% if drink_data %}
+        <h2 style="text-align: center;" ># name-wise recommendations</h2>
+        
+        <br>
+        <ul >
+        {% for drink in drink_data %}
+            <li>
+                <strong style="font-size: 2em;text-align: left ;margin-left: 20px;">{{ forloop.counter }}.{{ drink.strDrink }}</strong><br><br>
+                {% if drink.strDrinkThumb %}
+                    <div style="margin-left: 50px;">
+                    <img src="{{ drink.strDrinkThumb }}"  width="200" height="200" >
+                    </div>
+                    {% if drink.instruction_list %}
+                    <ul style="margin-left: 70px;">
+                        {% for sentence in drink.instructions_list %}
+                            <li>{{ sentence }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% endif %}
+                <br>
+                <br>
+                <br>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+        <br>
+        <br>
+        
+        <br>
+        <br>
+    {% if ingredient_data %}
+        <h2 style="text-align: center;" ># ingredient-wise recommendations</h2>
+        
+        <br>
+        <ul>
+        {% for drink in ingredient_data %}
+            <li>
+                <strong  style="font-size: 2em;text-align: left ;margin-left: 20px;">{{ forloop.counter }}.{{ drink.strDrink }}</strong><br><br>
+                {% if drink.strDrinkThumb %}
+                    <div style="margin-left: 50px;">
+                    <img src="{{ drink.strDrinkThumb }}" width="200" height="200">
+                    </div>
+                {% endif %}
+                
+                <br>
+                <br>
+    
+                <br>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% elif form.is_bound %}
+    <p>No cocktails found.</p>
+{% endif %}
+
+</body>
+</html>
