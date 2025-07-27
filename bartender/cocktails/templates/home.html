@@ -15,7 +15,7 @@
 
         body {
             font-family: Candara,sans-serif;
-            background: linear-gradient(135deg, #4d3aa1 0%, #5a3580 50%, #8b3d40 100%);
+            background: linear-gradient(135deg, #6653be 0%, #9c50c5 40%, #cc5559 100%);
             color: rgb(206, 206, 206);
             overflow-x: hidden;
             
@@ -121,7 +121,7 @@
     background-color: #9bb5ee;
     color: #333;
     font-size: 16px;
-    width: 300px;
+    width: 500px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: all 0.3s ease-in-out;
 }
@@ -133,20 +133,62 @@
 }
 
 .search-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 25px;
+    display: block;
+    text-align: center;
+    margin: 30px auto;
+    padding: 30px 300px;
+    border-radius: 100px;
     background-color: #ff8c94;
-    color: rgb(0, 0, 0);
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s;
+    color: black;
+    font-size: 36px;
+    min-width: 350px;
     white-space: nowrap;
+    transition: background 0.3s;
+    text-decoration: none;
+    font-family: Candara, sans-serif;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
+
 
 .search-button:hover {
     background-color: #e76f7f;
 }
+
+        .floating-ingredients {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ingredient {
+            position: absolute;
+            font-size: 2em;
+            animation: ingredientFloat 8s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        .ingredient:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .ingredient:nth-child(2) { left: 20%; animation-delay: 1s; }
+        .ingredient:nth-child(3) { left: 30%; animation-delay: 2s; }
+        .ingredient:nth-child(4) { left: 40%; animation-delay: 3s; }
+        .ingredient:nth-child(5) { left: 50%; animation-delay: 4s; }
+        .ingredient:nth-child(6) { left: 60%; animation-delay: 5s; }
+        <!--        
+        .ingredient:nth-child(7) { left: 70%; animation-delay: 6s; }
+        -->
+
+        .ingredient:nth-child(8) { left: 80%; animation-delay: 7s; }
+
+        @keyframes ingredientFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
 
         </style>
 </head>
@@ -160,13 +202,29 @@
         <div class="tropical-bubble"></div>
         <div class="tropical-bubble"></div>
     </div>
+
+                    <div class="floating-ingredients">
+                    <div class="ingredient">🍋</div>
+                    <div class="ingredient">🍊</div>
+                    <div class="ingredient">🍒</div>
+                    <div class="ingredient">🥥</div>
+                    <div class="ingredient">🍍</div>
+                    <div class="ingredient">🥭</div>
+                    <!--<div class="ingredient">🫐</div>-->
+                    <div class="ingredient">🍓</div>
+                </div>
+
     <br><br><br><br><br>
     <h1 style ='font-size:15em ; text-align: center;'>MIX MASTER</h1>
-    <p style ='text-align: center;font-size:2em ;'>Discover thousands of cocktail recipes, master bartending techniques, and create unforgettable drinks with our professional-grade cocktail database.</p>
+    <p style ='text-align: center;font-size:2.5em ;'>Discover thousands of cocktail recipes, master bartending techniques, and create unforgettable drinks with our professional-grade cocktail database.</p>
+    <br><br><br>
     <a href="/search/">
-        <button class="search-button" style="text-align: center; margin: 20px auto; display: block; width: 200px;">Search Cocktails</button>
+        <button class="search-button" style="text-align: center; margin: 20px auto; display: block; ">Search Cocktails</button>
     </a>
-
+    <br>
+    <a href="https://www.thecocktaildb.com/api.php">
+        <button class="search-button" style="text-align: center; margin: 20px auto; display: block;">API Documentation</button>
+    </a>
 
 
 
