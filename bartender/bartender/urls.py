@@ -21,5 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('search/',SearchCocktail,name='searchcocktail'),
     path('',home,name='home'),
+    path('task3/', SearchPage, name='task3'),
+    path('task3/<str:drink_id>/', cocktail_details, name='task3_search'),
 
 ]
