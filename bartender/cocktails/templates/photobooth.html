@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Booth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        tropical-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: -200px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index : -1;
+            pointer-events: none        
+        }
+
+        .tropical-bubble {
+            position: absolute;
+            bottom: -200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            animation: tropicalBubbleRise 6s infinite linear;
+        }
+
+        .tropical-bubble:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-delay: 0s; }
+        .tropical-bubble:nth-child(2) { left: 25%; width: 75px; height: 75px; animation-delay: 2s; }
+        .tropical-bubble:nth-child(3) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; }
+        .tropical-bubble:nth-child(4) { left: 55%; width: 68px; height: 68px; animation-delay: 4s; }
+        .tropical-bubble:nth-child(5) { left: 70%; width: 82px; height: 82px; animation-delay: 2s; }
+        .tropical-bubble:nth-child(6) { left: 85%; width: 76px; height: 76px; animation-delay: 0s; }
+
+        @keyframes tropicalBubbleRise {
+            0%   { bottom: -200px; opacity: 0; transform: scale(0); }
+            10%  { opacity: 0.6; transform: scale(1); }
+            90%  { opacity: 0.6; }
+            100% { bottom: 100%; opacity: 0; transform: scale(0); }
+        }
+
+        .floating-ingredients {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ingredient {
+            position: absolute;
+            font-size: 2em;
+            animation: ingredientFloat 8s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        .ingredient:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .ingredient:nth-child(2) { left: 20%; animation-delay: 1s; }
+        .ingredient:nth-child(3) { left: 30%; animation-delay: 2s; }
+        .ingredient:nth-child(4) { left: 40%; animation-delay: 3s; }
+        .ingredient:nth-child(5) { left: 50%; animation-delay: 4s; }
+        .ingredient:nth-child(6) { left: 60%; animation-delay: 5s; }
+        <!--        
+        .ingredient:nth-child(7) { left: 70%; animation-delay: 6s; }
+        -->
+
+        .ingredient:nth-child(8) { left: 80%; animation-delay: 7s; }
+
+        @keyframes ingredientFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        .elegant-frame {
+            background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 650px;
+            width: 100%;
+            position: relative;
+        }
+
+        .elegant-frame::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+            border-radius: 27px;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-viewport {
+            position: relative;
+            margin: 30px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            background: #000;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #video, #canvas {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            display: block;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .elegant-btn {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 
+                0 8px 25px rgba(102, 126, 234, 0.25),
+                0 1px 0 rgba(255, 255, 255, 0.2) inset;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+
+        .elegant-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .elegant-btn:hover::before {
+            left: 100%;
+        }
+
+        .elegant-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 35px rgba(102, 126, 234, 0.35),
+                0 1px 0 rgba(255, 255, 255, 0.3) inset;
+        }
+
+        .elegant-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 6px 20px rgba(102, 126, 234, 0.3),
+                0 1px 0 rgba(255, 255, 255, 0.2) inset;
+        }
+
+        .elegant-btn:disabled {
+            background: linear-gradient(145deg, #bdc3c7, #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(189, 195, 199, 0.2);
+        }
+
+        .elegant-btn:disabled::before {
+            display: none;
+        }
+
+        #uploadBtn {
+            background: linear-gradient(145deg, #00b894, #00a085);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.25);
+            display: none;
+        }
+
+        #uploadBtn:hover {
+            box-shadow: 0 12px 35px rgba(0, 184, 148, 0.35);
+        }
+
+        .photo-gallery {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .photo-gallery h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 300;
+            text-align: center;
+            font-size: 1.4em;
+            letter-spacing: 1px;
+        }
+
+        .photo-gallery img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-gallery img:hover {
+            transform: scale(1.02);
+        }
+
+        .status-display {
+            margin: 25px 0;
+            padding: 18px;
+            border-radius: 15px;
+            font-weight: 500;
+            font-size: 15px;
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-display.success {
+            background: linear-gradient(145deg, rgba(0, 184, 148, 0.1), rgba(0, 184, 148, 0.05));
+            color: #00b894;
+            border: 1px solid rgba(0, 184, 148, 0.3);
+        }
+
+        .status-display.error {
+            background: linear-gradient(145deg, rgba(231, 76, 60, 0.1), rgba(231, 76, 60, 0.05));
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            0% { 
+                opacity: 0; 
+                transform: translateY(20px);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        .loading-indicator {
+            display: none;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .elegant-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(102, 126, 234, 0.2);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: elegantSpin 1s linear infinite;
+        }
+
+        @keyframes elegantSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .camera-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 70%, transparent 100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .camera-flash.active {
+            animation: subtleFlash 0.4s ease-out;
+        }
+
+        @keyframes subtleFlash {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .elegant-frame {
+                margin: 15px;
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .elegant-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="tropical-bubbles">
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+    </div>
+
+    <div class="floating-ingredients">
+                    <div class="ingredient">🍋</div>
+                    <div class="ingredient">🍊</div>
+                    <div class="ingredient">🍒</div>
+                    <div class="ingredient">🥥</div>
+                    <div class="ingredient">🍍</div>
+                    <div class="ingredient">🥭</div>
+                    <!--<div class="ingredient">🫐</div>-->
+                    <div class="ingredient">🍓</div>
+                </div>
+    <div class="elegant-frame">
+        <h1>Photo Booth</h1>
+        
+        <div class="camera-viewport">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div class="control-panel">
+            <button class="elegant-btn" id="startBtn">Start Camera</button>
+            <button class="elegant-btn" id="captureBtn" disabled>Take Photo</button>
+            <button class="elegant-btn" id="uploadBtn">Upload Photo</button>
+            <a class="elegant-btn" id="downloadBtn" style="display: none;">Download Photo</a>
+
+        </div>
+        
+        <div class="loading-indicator">
+            <div class="elegant-spinner"></div>
+            <p style="color: #667eea; font-weight: 500;">Uploading your photo...</p>
+        </div>
+        
+        <div id="statusArea"></div>
+        
+        {% if img_url %}
+        <div class="photo-gallery">
+            <h3>Your Photo</h3>
+            <img src="{{ img_url }}" alt="Captured Photo">
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="camera-flash"></div>
+
+    <script>
+        // Simple variables
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const statusArea = document.getElementById('statusArea');
+        const loading = document.querySelector('.loading-indicator');
+        const flash = document.querySelector('.camera-flash');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let capturedPhoto = null;
+
+        // Get Django CSRF token
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            return '';
+        }
+
+        // Show status messages
+        function showMessage(text, isSuccess = true) {
+            statusArea.innerHTML = `<div class="status-display ${isSuccess ? 'success' : 'error'}">${text}</div>`;
+            setTimeout(() => statusArea.innerHTML = '', 4000);
+        }
+
+        // Start the camera
+        startBtn.onclick = async function() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = function() {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                };
+                
+                startBtn.disabled = true;
+                captureBtn.disabled = false;
+                showMessage('Camera started successfully. Ready to take photos.');
+            } catch (error) {
+                showMessage('Unable to access camera. Please grant camera permissions and try again.', false);
+            }
+        };
+
+        // Take the photo
+        captureBtn.onclick = function() {
+            // Subtle flash effect
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 400);
+            
+            // Capture the photo
+            ctx.drawImage(video, 0, 0);
+            capturedPhoto = canvas.toDataURL('image/jpeg');
+            
+            // Show the captured photo
+            canvas.style.display = 'block';
+            video.style.display = 'none';
+            
+            uploadBtn.style.display = 'inline-block';
+            downloadBtn.style.display = 'inline-block';
+            captureBtn.disabled = true;
+            
+            downloadBtn.href = capturedPhoto;
+            downloadBtn.download = `photo_${Date.now()}.jpg`;  // Optional: Give unique name
+            showMessage('Photo captured successfully. Click Upload Photo or Download.');
+        };
+
+        // Upload the photo
+        uploadBtn.onclick = async function() {
+            if (!capturedPhoto) return;
+            
+            loading.style.display = 'block';
+            uploadBtn.disabled = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('image', capturedPhoto);
+                formData.append('csrfmiddlewaretoken', getCSRFToken());
+                
+                const response = await fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    showMessage('Photo uploaded successfully. Refreshing page...');
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                showMessage('Upload failed. Please try again.', false);
+                uploadBtn.disabled = false;
+            } finally {
+                loading.style.display = 'none';
+            }
+        };
+
+        // Auto-start when page loads
+        window.onload = function() {
+            startBtn.click();
+        };
+    </script>
+</body>
+</html>

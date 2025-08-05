@@ -3,6 +3,10 @@ from django.http import HttpResponse
 from .forms import *
 import json
 import requests
+import base64
+from datetime import datetime
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 # Create your views here.
 
 def home(request):
@@ -163,3 +167,21 @@ def cocktail_details(request,drink_id):
               'ingredients':ingredients,
               'image':drink_data['strDrinkThumb']}
     return render(request,'task3.html',context=comtext)
+
+def photobooth(request):
+    file_url = None
+    if request.method =='POST':
+        img_data = request.POST.get('image') #image being the var used in js file that captures the img
+        if img_data:
+            meta_data,img_str=img_data.split(';base64,')
+            #meta_data = will have the type of the image
+            #img_str = will have the actual base64 img name url data
+            extension = meta_data.split('/')[-1] 
+            #filetype gives extension
+            img_id = f"captured_{datetime.today().isoformat(timespec='seconds').replace(':','_')}.{extension}"
+            #unique id for each image
+            img_file = ContentFile(base64.b64decode(img_str),name=img_id)
+            #class ContentFile(content,name)
+            file_path=default_storage.save(img_id,img_file)
+            file_url=default_storage.url(file_path)
+    return render(request,'photobooth.html',{'img_url':file_url})

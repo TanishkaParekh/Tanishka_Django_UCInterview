@@ -17,11 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from cocktails.views import *
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('search/',SearchCocktail,name='searchcocktail'),
     path('',home,name='home'),
     path('task3/', SearchPage, name='task3'),
     path('task3/<str:drink_id>/', cocktail_details, name='task3_search'),
-
+    path('photobooth/',photobooth,name='photobooth')
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
