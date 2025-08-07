@@ -7,10 +7,13 @@ import base64
 from datetime import datetime
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from .models import *
 # Create your views here.
 
 def home(request):
     return render(request,'home.html')
+def admin_login(request):
+    return render(request,'admin.html')
 def SearchCocktail(request):
     drink_data=[]
     ingredient_data=[]
@@ -22,11 +25,31 @@ def SearchCocktail(request):
     NoResult = False
                     
     if request.method == 'GET':
-        form = search_cocktail(request.GET)
+        form = search_drink(request.GET)
         if form.is_valid():
             submitted = True
             # Get the search term from the form
             search = form.cleaned_data['search']
+
+            #saving the search to a model 
+            cocktail_name=search.strip().title() #removes white 
+            obj,exsists=search_cocktail.objects.get_or_create(
+                cocktail_name=cocktail_name,
+                defaults={'search': search}
+            )
+            if not exsists:
+                obj.count_cocktail += 1
+                obj.save()
+            
+            ingredient_name = search.strip().lower()
+            ing_obj, created = search_ingredient.objects.get_or_create(
+                ingredient_name=ingredient_name,
+                defaults={'search': search}
+            )
+            if not created:
+                ing_obj.count_ingredient += 1
+                ing_obj.save()
+
 
             #fetch drink by name
             drinkName_url = f'https://www.thecocktaildb.com/api/json/v1/1/search.php?s={search}'
@@ -98,7 +121,7 @@ def SearchCocktail(request):
                         drink['ingredients'] = ingredients
                         ingredient_drinks.append(drink)
     else:
-        form = search_cocktail()
+        form = search_drink()
     
     return render(request,'cocktail_search.html',
                   {'form':form , 
@@ -114,12 +137,31 @@ def SearchPage(request):
     NoResult = False
                     
     if request.method == 'GET':
-        form = search_cocktail(request.GET)
+        form = search_drink(request.GET)
         if form.is_valid():
             submitted = True
             # Get the search term from the form
             search = form.cleaned_data['search']
 
+            #saving the search to a model 
+            cocktail_name=search.strip().title() #removes white 
+            obj,exsists=search_cocktail.objects.get_or_create(
+                cocktail_name=cocktail_name,
+                defaults={'search': search}
+            )
+            if not exsists:
+                obj.count_cocktail += 1
+                obj.save()
+            
+            ingredient_name = search.strip().lower()
+            ing_obj, created = search_ingredient.objects.get_or_create(
+                ingredient_name=ingredient_name,
+                defaults={'search': search}
+            )
+            if not created:
+                ing_obj.count_ingredient += 1
+                ing_obj.save()
+                
             #fetch drink by name
             drinkName_url = f'https://www.thecocktaildb.com/api/json/v1/1/search.php?s={search}'
             response1 = requests.get(drinkName_url)
@@ -137,7 +179,7 @@ def SearchPage(request):
             if not drink_data and not ingredient_data:
                 NoResult = True  
     else:
-        form = search_cocktail()
+        form = search_drink()
     
     return render(request,'search_page.html',
                   {'form':form , 
@@ -159,7 +201,7 @@ def cocktail_details(request,drink_id):
         if ingredient_name and ingredient_name.strip():
             ingredients.append({
                 'name': ingredient_name.strip(),
-                'measure': measure.strip() if measure and measure.strip() else ' '
+                'measure': measure.strip() if measure and measure.strip() else ' ' 
             })
     comtext ={'name':drink_data['strDrink'],
               'alcoholic':drink_data['strAlcoholic'],
@@ -167,6 +209,30 @@ def cocktail_details(request,drink_id):
               'ingredients':ingredients,
               'image':drink_data['strDrinkThumb']}
     return render(request,'task3.html',context=comtext)
+
+def random_details(request):
+    url_cocktail='https://www.thecocktaildb.com/api/json/v1/1/random.php'
+    response = requests.get(url_cocktail)
+    client_data = response.json()
+
+    if not client_data or 'drinks' not in client_data or not client_data['drinks']:
+        return HttpResponse("No cocktail found with the provided ID.")
+    drink_data = client_data['drinks'][0]
+    ingredients = []
+    for i in range(1, 4):
+        ingredient_name = drink_data.get(f'strIngredient{i}')
+        measure = drink_data.get(f'strMeasure{i}')
+        if ingredient_name and ingredient_name.strip():
+            ingredients.append({
+                'name': ingredient_name.strip(),
+                'measure': measure.strip() if measure and measure.strip() else ' '
+            })
+    comtext ={'name':drink_data['strDrink'],
+              'alcoholic':drink_data['strAlcoholic'],
+              'instructions':drink_data['strInstructions'],
+              'ingredients':ingredients,
+              'image':drink_data['strDrinkThumb']}
+    return render(request,'random.html',context=comtext)
 
 def photobooth(request):
     file_url = None

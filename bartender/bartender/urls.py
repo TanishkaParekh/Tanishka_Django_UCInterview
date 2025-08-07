@@ -25,6 +25,8 @@ urlpatterns = [
     path('',home,name='home'),
     path('task3/', SearchPage, name='task3'),
     path('task3/<str:drink_id>/', cocktail_details, name='task3_search'),
-    path('photobooth/',photobooth,name='photobooth')
+    path('photobooth/',photobooth,name='photobooth'),
+    path('randomiser/',random_details),
+    path('admin_login/',admin_login)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
