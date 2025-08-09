@@ -128,8 +128,6 @@ def SearchCocktail(request):
                    'drink_data':drink_data , 'ingredients':ingredients,
                    'ingredient_data':ingredient_drinks , 'name_data':name_data , 'instruction_list': instruction_list,
                    'submitted':submitted, 'NoResult':NoResult})
-
-
 def SearchPage(request):
     drink_data=[]
     ingredient_data=[]  
@@ -142,6 +140,7 @@ def SearchPage(request):
             submitted = True
             # Get the search term from the form
             search = form.cleaned_data['search']
+
 
             #saving the search to a model 
             cocktail_name=search.strip().title() #removes white 
@@ -162,6 +161,7 @@ def SearchPage(request):
                 ing_obj.count_ingredient += 1
                 ing_obj.save()
                 
+
             #fetch drink by name
             drinkName_url = f'https://www.thecocktaildb.com/api/json/v1/1/search.php?s={search}'
             response1 = requests.get(drinkName_url)
@@ -195,6 +195,13 @@ def cocktail_details(request,drink_id):
         return HttpResponse("No cocktail found with the provided ID.")
     drink_data = client_data['drinks'][0]
     ingredients = []
+
+    drink_name = drink_data['strDrink'].strip()
+    obj,exsists = search_drink.objects.get_or_create(drink_name=drink_name,default={'search':drink_name})
+    if not exsists:
+        obj.count_drink +=1
+        obj.save()
+
     for i in range(1, 4):
         ingredient_name = drink_data.get(f'strIngredient{i}')
         measure = drink_data.get(f'strMeasure{i}')
@@ -233,7 +240,6 @@ def random_details(request):
               'ingredients':ingredients,
               'image':drink_data['strDrinkThumb']}
     return render(request,'random.html',context=comtext)
-
 def photobooth(request):
     file_url = None
     if request.method =='POST':
@@ -251,3 +257,12 @@ def photobooth(request):
             file_path=default_storage.save(img_id,img_file)
             file_url=default_storage.url(file_path)
     return render(request,'photobooth.html',{'img_url':file_url})
+def search_history(request):
+    cocktails = search_cocktail.objects.all().order_by('-count_cocktail')
+    ingredients = search_ingredient.objects.all().order_by('-count_ingredient')
+    drinks = search_drink.objects.all().order_by('-count_drink')
+    return render(request, 'database.html', {
+        'cocktails': cocktails,
+        'ingredients': ingredients,
+        'drinks': drinks
+    })

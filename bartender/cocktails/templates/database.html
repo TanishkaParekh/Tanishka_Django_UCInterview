@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>🍹Cocktail Search</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Candara,sans-serif;
+            background: linear-gradient(135deg, #6653be 0%, #9c50c5 40%, #cc5559 100%);
+            color: rgb(206, 206, 206);
+            overflow-x: hidden;
+            text-align: center;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 80px;
+            position: relative;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: #666;
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff8c94, #ff6b9d);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 140, 148, 0.4);
+        }
+
+        .tropical-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: -50px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index : -1;
+            pointer-events: none        
+        }
+
+        .tropical-bubble {
+            position: absolute;
+            bottom: -200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            animation: tropicalBubbleRise 6s infinite linear;
+        }
+
+        .tropical-bubble:nth-child(1) { left: 10%; width: 80px; height: 80px; animation-delay: 0s; }
+        .tropical-bubble:nth-child(2) { left: 25%; width: 75px; height: 75px; animation-delay: 2s; }
+        .tropical-bubble:nth-child(3) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; }
+        .tropical-bubble:nth-child(4) { left: 55%; width: 68px; height: 68px; animation-delay: 4s; }
+        .tropical-bubble:nth-child(5) { left: 70%; width: 82px; height: 82px; animation-delay: 2s; }
+        .tropical-bubble:nth-child(6) { left: 85%; width: 76px; height: 76px; animation-delay: 0s; }
+
+        @keyframes tropicalBubbleRise {
+            0%   { bottom: -100px; opacity: 0; transform: scale(0); }
+            10%  { opacity: 0.6; transform: scale(1); }
+            90%  { opacity: 0.6; }
+            100% { bottom: 100vh; opacity: 0; transform: scale(0); }
+        }
+
+        .floating-ingredients {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ingredient {
+            position: absolute;
+            font-size: 2em;
+            animation: ingredientFloat 8s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        .ingredient:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .ingredient:nth-child(2) { left: 20%; animation-delay: 1s; }
+        .ingredient:nth-child(3) { left: 30%; animation-delay: 2s; }
+        .ingredient:nth-child(4) { left: 40%; animation-delay: 3s; }
+        .ingredient:nth-child(5) { left: 50%; animation-delay: 4s; }
+        .ingredient:nth-child(6) { left: 60%; animation-delay: 5s; }
+        .ingredient:nth-child(7) { left: 70%; animation-delay: 6s; }
+        .ingredient:nth-child(8) { left: 80%; animation-delay: 7s; }
+
+        @keyframes ingredientFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .palm-trees {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+            animation: palmSway 6s ease-in-out infinite;
+        }
+
+        @keyframes palmSway {
+            0%, 100% { transform: skewX(0deg); }
+            50% { transform: skewX(2deg); }
+        }
+
+        .search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    width: 100%;
+    padding: 0 20px; 
+    gap: 10px;
+}
+
+.search-input {
+    flex:1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #9bb5ee;
+    color: #333;
+    font-size: 16px;
+    width: 500px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.search-input:focus {
+    outline: none;
+    background-color: #9bb5ee;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.search-button {
+    display: block;
+    text-align: center;
+    margin: 30px auto;
+    padding: 30px 300px;
+    border-radius: 100px;
+    background-color: #ff8c94;
+    color: black;
+    font-size: 36px;
+    min-width: 350px;
+    white-space: nowrap;
+    transition: background 0.3s;
+    text-decoration: none;
+    font-family: Candara, sans-serif;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+
+.search-button:hover {
+    background-color: #e76f7f;
+}
+
+        .floating-ingredients {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ingredient {
+            position: absolute;
+            font-size: 2em;
+            animation: ingredientFloat 8s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        .ingredient:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .ingredient:nth-child(2) { left: 20%; animation-delay: 1s; }
+        .ingredient:nth-child(3) { left: 30%; animation-delay: 2s; }
+        .ingredient:nth-child(4) { left: 40%; animation-delay: 3s; }
+        .ingredient:nth-child(5) { left: 50%; animation-delay: 4s; }
+        .ingredient:nth-child(6) { left: 60%; animation-delay: 5s; }
+        <!--        
+        .ingredient:nth-child(7) { left: 70%; animation-delay: 6s; }
+        -->
+
+        .ingredient:nth-child(8) { left: 80%; animation-delay: 7s; }
+
+        @keyframes ingredientFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+table {
+        margin-left: auto;
+        margin-right: auto;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid rgb(255, 255, 255);
+        padding: 8px;
+        text-align: center;
+    }
+
+    .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 0 20px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .feature-description {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .stats-section {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            margin: 100px auto;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b9d, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .footer-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 100px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .social-link {
+            display: inline-block;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-history-section {
+            padding: 100px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .history-title {
+            font-size: clamp(3rem, 8vw, 8rem);
+            text-align: center;
+            margin-bottom: 80px;
+            background: linear-gradient(45deg, #ff6b9d, #ffd93d, #6bcf7f);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .history-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .history-table-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .history-table-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .history-table-wrapper:hover::before {
+            left: 100%;
+        }
+
+        .history-table-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-title {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .history-table th {
+            background: linear-gradient(45deg, #ff8c94, #ff6b9d);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .history-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .history-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .history-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .history-table tbody tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .history-table tbody tr:nth-child(odd) {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .back-to-home {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .home-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #ff8c94, #ffd93d);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 25px;
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: gradientShift 3s ease-in-out infinite;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .home-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 15px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .stats-section {
+                gap: 40px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+        </style>
+</head>
+<body>
+<div class="tropical-bubbles">
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+        <div class="tropical-bubble"></div>
+    </div>
+
+                    <div class="floating-ingredients">
+                    <div class="ingredient">🍋</div>
+                    <div class="ingredient">🍊</div>
+                    <div class="ingredient">🍒</div>
+                    <div class="ingredient">🥥</div>
+                    <div class="ingredient">🍍</div>
+                    <div class="ingredient">🥭</div>
+                    <!--<div class="ingredient">🫐</div>-->
+                    <div class="ingredient">🍓</div>
+                </div>
+
+    <br><br><br><br><br>
+    <h1 style ='font-size:14em ; text-align: center;'>MIX MASTER</h1>
+    <p style ='text-align: center;font-size:2.5em ;'>Discover thousands of cocktail recipes, master bartending techniques, and create unforgettable drinks with our professional-grade cocktail database.</p>
+    <br><br><br>
+ <h1 style ='font-size:8em ; text-align: center;'>SEARCH HISTORY</h1>
+
+<!-- Search History Section -->
+    <section class="search-history-section">
+        <h1 class="history-title">SEARCH HISTORY</h1>
+        
+        <div class="history-container">
+            <!-- Cocktails Table -->
+            <div class="history-table-wrapper">
+                <h2 class="table-title">🍸 Popular Cocktails</h2>
+                <div class="table-container">
+                    <table class="history-table">
+    
+    <tr>
+        <th>Cocktail Name</th>
+        <th>Times Searched</th>
+    </tr>
+    {% for c in cocktails %}
+    <tr>
+        <td>{{ c.cocktail_name }}</td>
+        <td>{{ c.count_cocktail }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">No cocktail searches yet.</td></tr>
+    {% endfor %}
+</table>
+</div>
+</div>
+<div class="history-table-wrapper">
+                <h2 class="table-title">🥃 Top Ingredients</h2>
+                <div class="table-container">
+                    <table class="history-table">
+    <tr>
+        <th>Ingredient Name</th>
+        <th>Times Searched</th>
+    </tr>
+    {% for i in ingredients %}
+    <tr>
+        <td>{{ i.ingredient_name }}</td>
+        <td>{{ i.count_ingredient }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">No ingredient searches yet.</td></tr>
+    {% endfor %}
+</table>
+</div></div>
+    <div class="history-table-wrapper">
+                <h2 class="table-title">🏆 Most Chosen Drinks</h2>
+                <div class="table-container">
+                    <table class="history-table">
+        <tr>
+            <th>Drink Name</th>
+            <th>Times Chosen</th>
+        </tr>
+        {% for drink in drinks %}
+        <tr>
+            <td>{{ drink.drink_name }}</td>
+            <td>{{ drink.count_drink }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No drinks have been chosen yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div></div>
+    <div class="back-to-home">
+    <a href="/">Back to Home</a></div>
+    </body>
+    </html>+
